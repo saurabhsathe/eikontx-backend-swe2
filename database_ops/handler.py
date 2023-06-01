@@ -7,6 +7,7 @@ Created on Thu Jun  1 00:29:59 2023
 from sqlalchemy.orm import sessionmaker
 from database_ops.connection import get_connection,get_engine
 import pandas as pd
+from sqlalchemy import text
 
 class Handler:
     
@@ -16,30 +17,46 @@ class Handler:
         self.engine = get_engine()
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
-    
+    def preprocess(self,df):
+        for col in df.columns:
+            data = df[col]
+            if isinstance(data[0], str):
+                data = [line.strip() for line in data if "\t" in line]
+            del df[col]
+            df[col.strip()]=data
+        return df
+            
     def add_users(self,df):
-        for idx, row in df.iterrows():
-            print(type(row["user_id"]))
-           
-        #df.to_sql("users",if_exists='append',con = self.conn,index=False)
+        df = self.preprocess(df)   
+        df.to_sql("users",if_exists='append',con = self.conn,index=False)
         print("users added successfully")
         
     
-    def add_compound(self):
-        pass
+    def add_compounds(self,df):
+        df =self.preprocess(df)
+        df.to_sql("compounds",if_exists='append',con = self.conn,index=False)
+        print("compounds added successfully")
     
     
+    def add_experiments(self,df):
+        df =self.preprocess(df)
+        df.to_sql("experiments",if_exists='append',con = self.conn,index=False)
+        print("experiements added successfully")
     
-    def add_experiment(self):
-        pass
+    def remove_all_data(self,table):
+        try:
+            self.conn.execute(text("delete from {};".format(table)))
+            print("data deleted successfully")
+        except Exception as e:
+            print(e)
     
-    def total_ex_by_user(self):
+    def total_ex_by_user(self,user_id):
         pass
     
     def avg_experiments_per_user(self):
         pass
     
-    def get_most_common_compound_user(self):
+    def get_most_common_compound_by_user(self,user_id):
         pass
     
     
