@@ -45,13 +45,29 @@ class Handler:
     
     def remove_all_data(self,table):
         try:
-            self.conn.execute(text("delete from {};".format(table)))
+            if not self.conn:
+                self.conn = get_connection()
+            sql ="drop table {};".format(table)
+            print(sql)
+            self.session.execute(text(sql))
+            self.session.commit()
             print("data deleted successfully")
+            
         except Exception as e:
             print(e)
     
-    def total_ex_by_user(self,user_id):
-        pass
+    def total_ex_by_users(self):
+        try:
+            if not self.session:
+                self.session = sessionmaker(bind=self.engine)()
+            sql='select user_id,count(*) as "total experiments" from experiments group by user_id;'
+            result = self.session.execute(text(sql))
+            result = pd.DataFrame(result,index=None)
+            #print(result)
+            self.session.commit()
+            return result
+        except Exception as e:
+            print(e)
     
     def avg_experiments_per_user(self):
         pass
@@ -59,5 +75,17 @@ class Handler:
     def get_most_common_compound_by_user(self,user_id):
         pass
     
+    def ex_for_user(self,user_id):
+        try:
+            if not self.session:
+                self.session = sessionmaker(bind=self.engine)()
+            sql='select user_id,count(*) as "total experiments" from experiments group by user_id where user_id = {};'.format(user_id)
+            result = self.session.execute(text(sql))
+            result = pd.DataFrame(result,index=None)
+            #print(result)
+            self.session.commit()
+            return result
+        except Exception as e:
+            print(e)
     
     
