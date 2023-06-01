@@ -1,5 +1,8 @@
 import pandas as pd
 import sqlalchemy
+from database_ops.handler import Handler
+myhandler =Handler()
+
 def etl():
     # Load CSV files
     # Process files to derive features
@@ -8,8 +11,9 @@ def etl():
     df_users = pd.read_csv("data/users.csv")
     df_experiments = pd.read_csv("data/user_experiments.csv")
     df_compounds  = pd.read_csv("data/compounds.csv")
-    
+    myhandler.add_users(df_users)
     print(df_experiments.columns)
+    
     print(df_users.columns)
     print(df_compounds.columns)
     
