@@ -27,19 +27,16 @@ class Manager:
         return df
             
     def add_users(self,df):
-        df = self.preprocess(df)   
         df.to_sql("users",if_exists='append',con = self.conn,index=False)
         print("users added successfully")
         
     
     def add_compounds(self,df):
-        df =self.preprocess(df)
         df.to_sql("compounds",if_exists='append',con = self.conn,index=False)
         print("compounds added successfully")
     
     
     def add_experiments(self,df):
-        df =self.preprocess(df)
         df.to_sql("experiments",if_exists='append',con = self.conn,index=False)
         print("experiements added successfully")
     
@@ -80,7 +77,8 @@ class Manager:
                     counts[user_id][num]+=1
             
             ans= {user_id:[] for user_id in compounds}
-            print(counts)
+            print(comp_df.columns)
+                
             for user_id in compounds:
                 
                 max_count=max(counts[user_id].values())
@@ -88,7 +86,6 @@ class Manager:
                 for key in counts[user_id]:
                     if counts[user_id][key]==max_count:
                         comp_ids.append(key)
-                print(user_id,comp_ids)
                 ans[user_id] = ",".join(list(comp_df[comp_df['compound_id'].isin(comp_ids)]["compound_name"]))
             
             #print(ans)
