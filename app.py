@@ -1,28 +1,31 @@
 import pandas as pd
 import sqlalchemy
 from database_ops.handler import Handler
-myhandler =Handler()
+from database_ops.manager import Manager
+myhandler =Manager()
 
+df_users =None
+df_experiments = None
+df_compounds =None
 
-def add_data():
+def add_data(df_users,df_experiments,df_compounds):
     try:
-        df_users = pd.read_csv("data/users.csv")
+        
         myhandler.add_users(df_users)
     except Exception as e:
         print(e)
     try:
-        df_experiments = pd.read_csv("data/user_experiments.csv")
         myhandler.add_experiments(df_experiments)
     except Exception as e:
         print(e)
     try:
-        df_compounds  = pd.read_csv("data/compounds.csv")
         myhandler.add_compounds(df_compounds)
     except Exception as e:
         print(e)
+    return True
     
-    print("data insertion complete")
-    
+def read_data():
+    pass
 
 def remove_data():
     myhandler.remove_all_data("experiments")
@@ -35,12 +38,22 @@ def etl():
     # Load CSV files
     # Process files to derive features
     # Upload processed data into a database
-    #add_data()
-    #remove_data()    
     #myhandler.total_ex_by_users()
-    x= myhandler.get_most_common_compound_by_user(1)
-    print(x)
+    #remove_data()
+    
+    df_users = myhandler.preprocess(pd.read_csv("data/users.csv"))
+    df_experiments = myhandler.preprocess(pd.read_csv("data/user_experiments.csv"))
+    df_compounds  = myhandler.preprocess(pd.read_csv("data/compounds.csv"))
 
+    #add_data(df_users,df_experiments,df_compounds)
+    #tot_exp = myhandler.total_ex_by_users(df_experiments)
+    
+    #avg_runtimes = myhandler.avg_experiments_amount_per_user(df_experiments)
+    print(myhandler.get_most_common_compound_by_user(df_users, df_compounds, df_experiments))
+    
+    
+    
+    
 # Your API that can be called to trigger your ETL process
 def trigger_etl():
     # Trigger your ETL process here
