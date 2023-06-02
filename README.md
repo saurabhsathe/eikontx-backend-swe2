@@ -1,61 +1,29 @@
-# Backend Engineering Take-Home Challenge
 
-### Introduction
-In this challenge, you will be tasked with creating a simple ETL pipeline that can be triggered via an API call. You will be provided with a set of CSV files that you will need to process, derive some features from, and then upload into a database table.
-
-### Requirements
-- Python 3.7+
-- Docker
-- PostgreSQL
-
-### Challenge
-1.  Create a Dockerized application that can be started with a single `docker run` command.
-
-2. The application should expose an API endpoint that triggers an ETL process.
-
-3. The ETL process should:
-- Load CSV files from the given data directory.
- - Process these files to derive some simple features.
- - Upload the processed data into a **postgres** table.
-
-4.  The application should be built using Python and any tooling you like for coordinating the workflow and fronting the api server
-
-### Data
-You will find three CSV files in the `data`  directory:
-
-- `users.csv`: Contains user data with the following columns: `user_id`, `name`, `email`,`signup_date`.
-
-- `user_experiments.csv`: Contains experiment data with the following columns: `experiment_id`, `user_id`, `experiment_compound_ids`, `experiment_run_time`. The `experiment_compound_ids` column contains a semicolon-separated list of compound IDs.
+## Submission
+The current submission has the Dockerfile and requirements.txt required to run this project. 
+The code has been developed as per my understanding of the questions. I had a lot of questions regarding the assignment given which I would love to ask if the opportunity given
 
 
-- `compounds.csv`: Contains compound data with the following columns: `compound_id`, `compound_name`, `compound_structure`.
+## Technical Requirements
+In order to run this project the host machine needs the Docker system to allow Docker container to be deployed and run
+
+## Add PostgresSQL db connection string
+There is a folder called database_ops in the home directory of the project. In this folder there is a connection.py file. This connection.py file has a connection_string variable. We need to assign the connection string in this variable
 
 
-## Feature Derivation
-From the provided CSV files, derive the following features:
 
-1. Total experiments a user ran.
-2. Average experiments amount per user.
-3. User's most commonly experimented compound.
-
-## Deliverables
-Please provide the following in a GITHUB REPOSITORY.
-
-1. A Dockerfile that sets up the environment for your application.
-2. A requirements.txt file with all the Python dependencies.
-3. A Python script that sets up the API and the ETL process.
-4. A brief README explaining how to build and run your application, and how to trigger the ETL process.
+## Docker commands to build and run this applcation
+sudo docker build --tag eikon-app .
+sudo docker run -dp 4000:4000 eikon-app
 
 
-Please also provide a script that builds, and runs the docker container. 
-You should also provide a script that scaffolds how a user can run the ETL process. This can be `curl` or something else.
-Finally, provide a script that queries the database and showcases that it has been populated with the desired features.
+## Triggering the ETL
+The api developed is a post api which runs the ETL pipeline. Its running on the 4000 port of the host machine. It returns the derived features as response. An example would be the following POST request
+http://3.21.236.252:4000/trigger_etl
 
 
-## Evaluation
-Your solution will be evaluated on the following criteria:
 
-Code quality and organization.
-Proper use of Python and Docker.
-Successful execution of the ETL process.
-Accuracy of the derived features.
+
+
+
+
