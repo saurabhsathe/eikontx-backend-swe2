@@ -37,7 +37,9 @@ def etl():
     # Upload processed data into a database
     #add_data()
     #remove_data()    
-    myhandler.total_ex_by_users()
+    #myhandler.total_ex_by_users()
+    x= myhandler.get_most_common_compound_by_user(1)
+    print(x)
 
 # Your API that can be called to trigger your ETL process
 def trigger_etl():

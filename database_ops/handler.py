@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from database_ops.connection import get_connection,get_engine
 import pandas as pd
 from sqlalchemy import text
-
+from collections import defaultdict
 class Handler:
     
     def __init__(self):
@@ -70,16 +70,66 @@ class Handler:
             print(e)
     
     def avg_experiments_per_user(self):
-        pass
+        try:
+            if not self.session:
+                self.session = sessionmaker(bind=self.engine)()
+            sql='select AVG(total) from (select count(*) as "total" from experiments group by user_id) as x;'
+            result = self.session.execute(text(sql))
+            result = pd.DataFrame(result,index=None)
+            #print(result)
+            self.session.commit()
+            return result
+        except Exception as e:
+            print(e)
     
     def get_most_common_compound_by_user(self,user_id):
-        pass
-    
+        try:
+            if not self.session:
+                self.session = sessionmaker(bind=self.engine)()
+            sql='select * from experiments where user_id = {};'.format(user_id)
+            result = self.session.execute(text(sql))
+            
+            result = pd.DataFrame(result,index=None)
+            compounds =[]
+            
+            for idx,row in result.iterrows():
+                compounds.append(row["experiment_compound_ids"])
+                
+                
+            if not compounds:
+                return None
+            counts=defaultdict(int)
+            for s in compounds:
+                for num in s.split(";"):
+                    counts[int(num)]+=1
+                    
+            max_count=max(counts.values())
+            comp_ids = []
+            for key in counts:
+                if counts[key]==max_count:
+                    comp_ids.append(key)
+            
+                    
+            print(comp_ids)    
+            self.session.commit()
+                
+            x= ",".join([str(v) for v in comp_ids])
+            sql='select * from compounds where compound_id in ({});'.format(x)
+            print(sql)
+            result = self.session.execute(text(sql))
+            result = pd.DataFrame(result,index=None)
+            self.session.commit()
+            
+            return result
+        
+        except Exception as e:
+            print(e)
+        
     def ex_for_user(self,user_id):
         try:
             if not self.session:
                 self.session = sessionmaker(bind=self.engine)()
-            sql='select user_id,count(*) as "total experiments" from experiments group by user_id where user_id = {};'.format(user_id)
+            sql='select user_id,count(*) as "total experiments" from experiments group by user_id having user_id = {};'.format(user_id)
             result = self.session.execute(text(sql))
             result = pd.DataFrame(result,index=None)
             #print(result)

@@ -22,10 +22,5 @@ def get_connection():
 def get_engine():
     return engine
 
-def show_databases():
-    conn = get_connection()
-    return conn
-
-print(show_databases())
 
     
