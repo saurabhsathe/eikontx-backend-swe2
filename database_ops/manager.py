@@ -92,7 +92,7 @@ class Manager:
                 ans[user_id] = ",".join(list(comp_df[comp_df['compound_id'].isin(comp_ids)]["compound_name"]))
             
             #print(ans)
-            print(ans)
+            
             return ans
         
         except Exception as e:
